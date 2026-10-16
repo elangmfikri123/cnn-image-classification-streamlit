@@ -1,0 +1,16 @@
+# Local Python environment and caches
+.venv/
+.pip-temp/
+__pycache__/
+*.py[cod]
+
+# Dataset files are downloaded/prepared locally and are not needed for inference
+archive.zip
+data/
+
+# Generated training reports and unused model variants
+outputs/
+models/baseline_cnn.keras
+
+# Local Streamlit secrets
+.streamlit/secrets.toml
