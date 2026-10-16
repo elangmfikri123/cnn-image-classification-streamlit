@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from io import BytesIO
 from pathlib import Path
 
 import numpy as np
@@ -78,7 +79,8 @@ if uploaded_file is None:
     st.stop()
 
 try:
-    uploaded_image = Image.open(uploaded_file)
+    uploaded_bytes = uploaded_file.getvalue()
+    uploaded_image = Image.open(BytesIO(uploaded_bytes))
     uploaded_image.load()
 except (UnidentifiedImageError, OSError, ValueError):
     st.error("File tidak dapat dibaca sebagai gambar yang valid.")
@@ -86,7 +88,7 @@ except (UnidentifiedImageError, OSError, ValueError):
 
 with st.container(border=True):
     st.subheader("Gambar yang diunggah")
-    st.image(uploaded_image, caption=uploaded_file.name, width="stretch")
+    st.image(uploaded_bytes, caption=uploaded_file.name, width="stretch")
 
 if not MODEL_PATH.is_file() or not CLASS_NAMES_PATH.is_file():
     st.error(
