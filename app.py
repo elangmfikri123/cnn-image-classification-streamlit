@@ -95,8 +95,7 @@ if not MODEL_PATH.is_file() or not CLASS_NAMES_PATH.is_file():
     )
     st.stop()
 
-result_container = st.container()
-with result_container.skeleton(height=220):
+with st.spinner("Menganalisis gambar daun...", show_time=True):
     try:
         classification_model = load_model(str(MODEL_PATH))
         class_names = load_class_names(str(CLASS_NAMES_PATH))
@@ -108,7 +107,7 @@ with result_container.skeleton(height=220):
         st.stop()
 
 best_prediction = top_predictions.iloc[0]
-with result_container.container(border=True):
+with st.container(border=True):
     st.subheader("Hasil prediksi")
     st.metric(
         "Kelas utama",
@@ -128,6 +127,7 @@ with result_container.container(border=True):
     st.dataframe(
         display_predictions,
         hide_index=True,
+        key="prediction_probabilities",
         column_config={
             "Probabilitas": st.column_config.ProgressColumn(
                 "Probabilitas (%)", min_value=0.0, max_value=100.0, format="%.2f%%"
