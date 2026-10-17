@@ -90,8 +90,7 @@ def predict_image(
 
 st.title("Klasifikasi penyakit daun mangga")
 st.write(
-    "Unggah foto daun mangga untuk memperoleh kelas prediksi dan tiga "
-    "probabilitas tertinggi dari model MobileNetV2."
+    "Upload Gambar daun mangga"
 )
 
 with st.container(border=True):
