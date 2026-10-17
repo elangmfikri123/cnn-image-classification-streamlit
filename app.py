@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import html
 import json
 from io import BytesIO
 from pathlib import Path
@@ -42,6 +44,33 @@ def prepare_image(image: Image.Image) -> np.ndarray:
     image = image.resize(IMAGE_SIZE, Image.Resampling.BILINEAR)
     image_array = np.asarray(image, dtype=np.float32)
     return np.expand_dims(image_array, axis=0)
+
+
+def render_image_preview(image: Image.Image, filename: str) -> None:
+    """Menampilkan gambar tanpa bergantung pada endpoint media Streamlit."""
+    preview = ImageOps.exif_transpose(image).convert("RGB")
+    preview.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+
+    buffer = BytesIO()
+    preview.save(buffer, format="JPEG", quality=90, optimize=True)
+    encoded_image = base64.b64encode(buffer.getvalue()).decode("ascii")
+    safe_filename = html.escape(filename)
+
+    st.html(
+        f"""
+        <figure style="margin:0; text-align:center">
+          <img
+            src="data:image/jpeg;base64,{encoded_image}"
+            alt="{safe_filename}"
+            style="display:block; width:100%; max-height:640px;
+                   object-fit:contain; border-radius:8px"
+          />
+          <figcaption style="margin-top:8px; color:gray">
+            {safe_filename}
+          </figcaption>
+        </figure>
+        """
+    )
 
 
 def predict_image(
@@ -88,7 +117,7 @@ except (UnidentifiedImageError, OSError, ValueError):
 
 with st.container(border=True):
     st.subheader("Gambar yang diunggah")
-    st.image(uploaded_bytes, caption=uploaded_file.name, width="stretch")
+    render_image_preview(uploaded_image, uploaded_file.name)
 
 if not MODEL_PATH.is_file() or not CLASS_NAMES_PATH.is_file():
     st.error(
